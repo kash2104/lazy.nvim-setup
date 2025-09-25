@@ -25,4 +25,4 @@ return {
 
   -- use mini.starter instead of alpha
   -- Note: This is now handled in the main lazy.lua configuration
-} 
+}

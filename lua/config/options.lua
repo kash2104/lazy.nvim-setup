@@ -16,8 +16,22 @@ vim.opt.textwidth = 80 -- Optional: Set a preferred text width (adjust to your n
 --vim.opt.softtabstop = 4      -- Optional: Set soft tab stop to 4 spaces
 vim.opt.shiftwidth = 4 -- Optional: Indentation width for auto-indentation
 --vim.opt.expandtab = true     -- Optional: Convert tabs to spaces
---
 
 vim.opt.list = false
 vim.opt.ignorecase = true
 vim.g.autoformat = false
+
+-- Wrap diagnostics in floating windows
+vim.diagnostic.config({
+  float = { wrap = true },
+  -- Uncomment below to truncate virtual text
+  virtual_text = {
+    format = function(diagnostic)
+      local msg = diagnostic.message
+      if #msg > 80 then
+        return msg:sub(1, 77) .. "..."
+      end
+      return msg
+    end,
+  },
+})
