@@ -23,15 +23,16 @@ vim.g.autoformat = false
 
 -- Wrap diagnostics in floating windows
 vim.diagnostic.config({
-  float = { wrap = true },
-  -- Uncomment below to truncate virtual text
-  virtual_text = {
-    format = function(diagnostic)
-      local msg = diagnostic.message
-      if #msg > 80 then
-        return msg:sub(1, 77) .. "..."
-      end
-      return msg
-    end,
+  virtual_text = false,  -- disables inline errors
+  signs = true,          -- keep gutter signs
+  underline = true,      -- keep underlines
+  update_in_insert = false,
+  severity_sort = true,
+  float = {
+    border = "rounded",
+    wrap = true,
+    max_width = 80,
   },
 })
+vim.o.updatetime = 500  -- 0.3 seconds
+

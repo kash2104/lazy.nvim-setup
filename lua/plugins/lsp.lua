@@ -1,50 +1,51 @@
-return {
-  -- add pyright to lspconfig
-  {
-    "neovim/nvim-lspconfig",
-    ---@class PluginLspOpts
-    opts = {
-      ---@type lspconfig.options
-      servers = {
-        -- pyright will be automatically installed with mason and loaded with lspconfig
-        pyright = {},
-      },
-    },
-  },
 
-  -- add tsserver and setup with typescript.nvim instead of lspconfig
+-- ~/.config/nvim/lua/plugins/lsp.lua
+return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      "jose-elias-alvarez/typescript.nvim",
-      init = function()
-        require("lazyvim.util").lsp.on_attach(function(_, buffer)
-          -- stylua: ignore
-          vim.keymap.set( "n", "<leader>co", "TypescriptOrganizeImports", { buffer = buffer, desc = "Organize Imports" })
-          vim.keymap.set("n", "<leader>cR", "TypescriptRenameFile", { desc = "Rename File", buffer = buffer })
-        end)
-      end,
+      { "jose-elias-alvarez/typescript.nvim" },
     },
-    ---@class PluginLspOpts
+
+    -- Runs when the plugin is loaded
+    init = function()
+      local lsp = require("snacks.util.lsp")
+
+      -- Attach keymaps when any LSP client attaches
+      lsp.on({},"attach", function(_, buffer)
+        local map = function(lhs, rhs, desc)
+          vim.keymap.set("n", lhs, rhs, {
+            buffer = buffer,
+            silent = true,
+            desc = desc,
+          })
+        end
+
+        map("<leader>co", function()
+          vim.cmd("TypescriptOrganizeImports")
+        end, "Organize Imports")
+
+        map("<leader>cR", function()
+          vim.cmd("TypescriptRenameFile")
+        end, "Rename File")
+      end)
+    end,
+
+    -- LSP server configuration
     opts = {
-      ---@type lspconfig.options
       servers = {
-        -- tsserver will be automatically installed with mason and loaded with lspconfig
-        tsserver = {},
+        pyright = {},   -- Python
+        tsserver = {},  -- TypeScript/JavaScript
       },
-      -- you can do any additional lsp server setup here
-      -- return true if you don't want this server to be setup with lspconfig
-      ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
+
       setup = {
-        -- example to setup with typescript.nvim
+        -- Use typescript.nvim to setup tsserver instead of default lspconfig
         tsserver = function(_, opts)
           require("typescript").setup({ server = opts })
-          return true
+          return true -- prevent lspconfig from setting up tsserver again
         end,
-        -- Specify * to use this function as a fallback for any server
-        -- ["*"] = function(server, opts) end,
       },
     },
   },
-
 }
+
